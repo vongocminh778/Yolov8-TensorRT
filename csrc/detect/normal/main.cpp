@@ -5,19 +5,21 @@
 #include "opencv2/opencv.hpp"
 #include "yolov8.hpp"
 
-const std::vector<std::string> CLASS_NAMES = {
-    "person",         "bicycle",    "car",           "motorcycle",    "airplane",     "bus",           "train",
-    "truck",          "boat",       "traffic light", "fire hydrant",  "stop sign",    "parking meter", "bench",
-    "bird",           "cat",        "dog",           "horse",         "sheep",        "cow",           "elephant",
-    "bear",           "zebra",      "giraffe",       "backpack",      "umbrella",     "handbag",       "tie",
-    "suitcase",       "frisbee",    "skis",          "snowboard",     "sports ball",  "kite",          "baseball bat",
-    "baseball glove", "skateboard", "surfboard",     "tennis racket", "bottle",       "wine glass",    "cup",
-    "fork",           "knife",      "spoon",         "bowl",          "banana",       "apple",         "sandwich",
-    "orange",         "broccoli",   "carrot",        "hot dog",       "pizza",        "donut",         "cake",
-    "chair",          "couch",      "potted plant",  "bed",           "dining table", "toilet",        "tv",
-    "laptop",         "mouse",      "remote",        "keyboard",      "cell phone",   "microwave",     "oven",
-    "toaster",        "sink",       "refrigerator",  "book",          "clock",        "vase",          "scissors",
-    "teddy bear",     "hair drier", "toothbrush"};
+// const std::vector<std::string> CLASS_NAMES = {
+//     "person",         "bicycle",    "car",           "motorcycle",    "airplane",     "bus",           "train",
+//     "truck",          "boat",       "traffic light", "fire hydrant",  "stop sign",    "parking meter", "bench",
+//     "bird",           "cat",        "dog",           "horse",         "sheep",        "cow",           "elephant",
+//     "bear",           "zebra",      "giraffe",       "backpack",      "umbrella",     "handbag",       "tie",
+//     "suitcase",       "frisbee",    "skis",          "snowboard",     "sports ball",  "kite",          "baseball bat",
+//     "baseball glove", "skateboard", "surfboard",     "tennis racket", "bottle",       "wine glass",    "cup",
+//     "fork",           "knife",      "spoon",         "bowl",          "banana",       "apple",         "sandwich",
+//     "orange",         "broccoli",   "carrot",        "hot dog",       "pizza",        "donut",         "cake",
+//     "chair",          "couch",      "potted plant",  "bed",           "dining table", "toilet",        "tv",
+//     "laptop",         "mouse",      "remote",        "keyboard",      "cell phone",   "microwave",     "oven",
+//     "toaster",        "sink",       "refrigerator",  "book",          "clock",        "vase",          "scissors",
+//     "teddy bear",     "hair drier", "toothbrush"};
+
+const std::vector<std::string> CLASS_NAMES = {"pedestrian", "people", "bicycle", "car", "van", "truck", "tricycle", "awning-tricycle", "bus", "motor"};
 
 const std::vector<std::vector<unsigned int>> COLORS = {
     {0, 114, 189},   {217, 83, 25},   {237, 177, 32},  {126, 47, 142},  {119, 172, 48},  {77, 190, 238},
@@ -71,9 +73,9 @@ int main(int argc, char** argv)
 
     cv::Mat  res, image;
     cv::Size size        = cv::Size{640, 640};
-    int      num_labels  = 80;
+    int      num_labels  = 10; // default 80 COCO - 10 Visdrone
     int      topk        = 100;
-    float    score_thres = 0.25f;
+    float    score_thres = 0.8f;
     float    iou_thres   = 0.65f;
 
     std::vector<Object> objs;
@@ -97,6 +99,7 @@ int main(int argc, char** argv)
             yolov8->draw_objects(image, res, objs, CLASS_NAMES, COLORS);
             auto tc = (double)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.;
             printf("cost %2.4lf ms\n", tc);
+            cv::resize(res, res, cv::Size(1920, 1080), cv::INTER_LINEAR);
             cv::imshow("result", res);
             if (cv::waitKey(10) == 'q') {
                 break;
